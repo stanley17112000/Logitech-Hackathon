@@ -63,7 +63,8 @@
           }
 
         </style>
-        <script> 
+        <script>
+            var pre_msg_len = 0;
             if (!String.format) {
               String.format = function(format) {
                 var args = Array.prototype.slice.call(arguments, 1);
@@ -87,6 +88,7 @@
             function updateMessage( msgs ){
                 if ( typeof( msgs ) == 'undefined' || msgs.length == 0 ){
                     $('#mainContent').html( '<img class="centerImg" src="http://i.imgur.com/bIVtAM1.png">' )
+                    $('html, body').animate({scrollTop: 0}, '5000', 'linear')
                 }
                 else{
                   var appendString = gen_html_carouse_header( msgs.length )
@@ -97,11 +99,23 @@
 
                   }console.log( appendString )
                   appendString += gen_html_carouse_tail()
-                  
-                  $('#mainContent').html(  appendString )
-                  $('#myCarouse1').carousel()
-
+                  if( pre_msg_len == 0)
+                  {
+                    console.log(appendString);
+                    $('#mainContent').append(  appendString )
+                    $('html, body').animate({scrollTop: $('#mainContent')[0].scrollHeight}, '5000', 'linear', function() {
+                                          $('#mainContent').html(  appendString )
+                                          $('#myCarouse1').carousel()
+                    })
+                  }
+                  else
+                  {
+                    $('#mainContent').html(  appendString )
+                    $('#myCarouse1').carousel()
+                  }
                 }
+                pre_msg_len = msgs.length
+
             }
         </script>
     </head>
