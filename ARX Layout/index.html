@@ -23,23 +23,44 @@
             font-family: 'Vollkorn', serif;
             font-size: 20px;
           }
+          .absoluteCenter{
+                position: absolute;
+                margin: auto;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+          }
           .outline_box{
             border: 3px dashed #ccc;
             margin-left: 40px;
             height: 25%;
           }
+          .fromContainer{
+            position: relative;
+          }
           .fromMessage{
-             display: inline-block;
-             vertical-align: middle;
+             
+             display:table-cell;
+            vertical-align:middle;
+              
           }
           .input{
               
               margin-left: 50px;
           }
           .fromBox{
-             height: 100%;
-             display: inline-block;
-             vertical-align: middle;
+              position: relative;
+              height: 100%;
+              display: table;
+          }
+
+          .social_icon{
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 50px;
+            height: 50px;
           }
 
           .blink_me {
@@ -62,6 +83,9 @@
 
           }
 
+
+
+
         </style>
         <script> 
             if (!String.format) {
@@ -77,6 +101,18 @@
             }
             function appendSelfMessage( msg="" ){
                 $('.active > .row > .col-xs-9 > div > .input').html( msg )
+
+
+            }
+            function sendMessageEffect(){
+                socialIcon = $('.active > .row > .fromBox > .fromContainer > .social_icon')
+                socialIcon.toggle( 'scale' , function(){
+                    imageUrl = socialIcon.src
+                   
+                    //var img = $(String.format('<img id="animateIcon" src="{0}" class="absoluteCenter">', imageUrl));
+                    
+
+                })
             }
             function nextPage(  ){
                 $('#rightControl').click()
@@ -129,25 +165,33 @@
       }
       function gen_html_carouse_body( msg , isActive ){
 
-          fromMessage = 'Hi, there. My name is Stanley. Im from Taiwan'
+          fromMessage = 'Hi, there. My name is Stanley. Im from Taiwan. This is my first time being a hacker'
           toMessage = 'Hello, body'
           fromIconUrl = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQjMQSVoXBDjYUpZm9a-HLx0IiKIr6wuujnCcNU8Ou006uihh3n9g'
           toIconUrl = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQjMQSVoXBDjYUpZm9a-HLx0IiKIr6wuujnCcNU8Ou006uihh3n9g'
+
+          socialIconUrlLine = 'https://cdn0.iconfinder.com/data/icons/circle-flat/512/line-128.png'
+          socialIconUrlFB = 'http://i.imgur.com/3MLJDaF.png'
 
           str = String.format( '<div class="item {0}">' , isActive ? 'active' : '' )
 
           str += `
             <div class="row halfHeight">
-              <div class="col-xs-3" >
+              <div class="col-xs-3 fromBox" >
+                <div class="fromContainer">
           `
 
           str += String.format( '<img class="img-responsive img-circle" src="{0}" >', fromIconUrl )
-                  
+                
+          str += String.format( '<img class="social_icon" src = "{0}">', socialIconUrlLine)
+          
 
           str += `
+                </div>
               </div>
               <div class="col-xs-9 fromBox">
-                  <blockquote class="fromMessage">
+                <div class="fromMessage">
+                  <blockquote >
                     <p>
           `
 
@@ -157,6 +201,7 @@
 
                     </p>
                   </blockquote>
+                </div>
               </div>
 
             </div>
