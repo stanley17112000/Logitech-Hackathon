@@ -13,10 +13,11 @@ import ctypes
 
 import random
 
-
+"""
 val = logi_led.logi_led_init()
 print "init = ",val
 time.sleep(1) # Give the SDK a second to initialize
+"""
 
 neighbor = {}
 neighbor[logi_led.ESC] = [logi_led.G_LOGO, logi_led.F1, logi_led.ONE, logi_led.TILDE, logi_led.G_1]
@@ -265,6 +266,7 @@ keyTObit[logi_led.G_9] = 32+21*4*6
 keyTObit[logi_led.G_LOGO] = 36+21*4*6
 keyTObit[logi_led.G_BADGE] = 40+21*4*6
 
+"""
 boarder = []
 boarder.append(logi_led.G_1)
 boarder.append(logi_led.G_2)
@@ -311,10 +313,29 @@ boarder.append(logi_led.ARROW_DOWN)
 boarder.append(logi_led.ARROW_RIGHT)
 boarder.append(logi_led.NUM_ZERO)
 boarder.append(logi_led.NUM_PERIOD)
+"""
 
-Rbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.35, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
-Gbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.35, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
-Bbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.35, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+RRbrightiness = [1.0*1.0, 0.95*0.9, 0.9*0.8, 0.85*0.7, 0.8*0.6, 0.75*0.5, 0.7*0.3, 0.65*0.1, 0.6*0, 0.55*0, 0.5*0, 0.45*0, 0.4*0, 0.35*0, 0.3*0, 0.25*0, 0.2*0, 0.15*0, 0.1*0, 0.05*0, 0.0]
+RGbrightiness = [1.0*0, 0.95*0.1, 0.9*0.3, 0.85*0.45, 0.8*0.6, 0.75*0.7, 0.7*0.8, 0.65*0.9, 0.6*1.0, 0.55*0.9, 0.5*0.8, 0.45*0.7, 0.4*0.6, 0.35*0.5, 0.3*0.4, 0.25*0.3, 0.2*0.2, 0.15*0.1, 0.1*0, 0.05*0, 0.0]
+RBbrightiness = [1.0*0, 0.95*0, 0.9*0, 0.85*0, 0.8*0, 0.75*0, 0.7*0, 0.65*0, 0.6*0, 0.55*0.1, 0.5*0.3, 0.45*0.5, 0.4*0.6, 0.35*0.8, 0.3*0.9, 0.25*1.0, 0.2*1.0, 0.15*1.0, 0.1*1.0, 0.05*1.0, 0.0]
+GGbrightiness = [1.0*1.0, 0.95*0.9, 0.9*0.8, 0.85*0.7, 0.8*0.6, 0.75*0.5, 0.7*0.3, 0.65*0.1, 0.6*0, 0.55*0, 0.5*0, 0.45*0, 0.4*0, 0.35*0, 0.3*0, 0.25*0, 0.2*0, 0.15*0, 0.1*0, 0.05*0, 0.0]
+GBbrightiness = [1.0*0, 0.95*0.1, 0.9*0.3, 0.85*0.45, 0.8*0.6, 0.75*0.7, 0.7*0.8, 0.65*0.9, 0.6*1.0, 0.55*0.9, 0.5*0.8, 0.45*0.7, 0.4*0.6, 0.35*0.5, 0.3*0.4, 0.25*0.3, 0.2*0.2, 0.15*0.1, 0.1*0, 0.05*0, 0.0]
+GRbrightiness = [1.0*0, 0.95*0, 0.9*0, 0.85*0, 0.8*0, 0.75*0, 0.7*0, 0.65*0, 0.6*0, 0.55*0.1, 0.5*0.3, 0.45*0.5, 0.4*0.6, 0.35*0.8, 0.3*0.9, 0.25*1.0, 0.2*1.0, 0.15*1.0, 0.1*1.0, 0.05*1.0, 0.0]
+BBbrightiness = [1.0*1.0, 0.95*0.9, 0.9*0.8, 0.85*0.7, 0.8*0.6, 0.75*0.5, 0.7*0.3, 0.65*0.1, 0.6*0, 0.55*0, 0.5*0, 0.45*0, 0.4*0, 0.35*0, 0.3*0, 0.25*0, 0.2*0, 0.15*0, 0.1*0, 0.05*0, 0.0]
+BRbrightiness = [1.0*0, 0.95*0.1, 0.9*0.3, 0.85*0.45, 0.8*0.6, 0.75*0.7, 0.7*0.8, 0.65*0.9, 0.6*1.0, 0.55*0.9, 0.5*0.8, 0.45*0.7, 0.4*0.6, 0.35*0.5, 0.3*0.4, 0.25*0.3, 0.2*0.2, 0.15*0.1, 0.1*0, 0.05*0, 0.0]
+BGbrightiness = [1.0*0, 0.95*0, 0.9*0, 0.85*0, 0.8*0, 0.75*0, 0.7*0, 0.65*0, 0.6*0, 0.55*0.1, 0.5*0.3, 0.45*0.5, 0.4*0.6, 0.35*0.8, 0.3*0.9, 0.25*1.0, 0.2*1.0, 0.15*1.0, 0.1*1.0, 0.05*1.0, 0.0]
+
+"""
+RRbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.25, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+GGbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.25, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+BBbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.25, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+RGbrightiness = [0]*21
+RBbrightiness = [0]*21
+GRbrightiness = [0]*21
+GBbrightiness = [0]*21
+BRbrightiness = [0]*21
+BGbrightiness = [0]*21
+"""
 
 class touching_effect:
 	def __init__(self, pos, red, green, blue, gen = 0):
@@ -350,26 +371,10 @@ class keyboard_effect:
 	
 	def __init__(self):
 		self.active_effect = []
-		"""
-		self.active_effect_d1 = []
-		self.active_effect_d2 = []
-		self.active_effect_d3 = []
-		self.active_effect_d4 = []
-		self.active_effect_d5 = []
-		self.active_effect_d6 = []
-		"""
 		self.bitmap = [chr(0),chr(0),chr(0),chr(255)]*21*7
 
 	def touching(self, key_name, red = 255, green = 255, blue = 255, gen = 0):
 		self.active_effect.append(touching_effect([key_name], int(red*1.0), int(green*1.0), int(blue*1.0), gen))
-		"""
-		self.active_effect_d1.append(touching_effect([key_name], int(red*0.9), int(green*0.8), int(blue*0.9), gen))
-		self.active_effect_d2.append(touching_effect([key_name], int(red*0.5), int(green*0.5), int(blue*0.5), gen))
-		self.active_effect_d3.append(touching_effect([key_name], int(red*0.1), int(green*0.1), int(blue*0.1), gen))
-		self.active_effect_d4.append(touching_effect([key_name], int(red*0.3), int(green*0.2), int(blue*0.3), gen))
-		self.active_effect_d5.append(touching_effect([key_name], int(red*0.6), int(green*0.4), int(blue*0.6), gen))
-		self.active_effect_d6.append(touching_effect([key_name], int(red*0.2), int(green*0.1), int(blue*0.2), gen))
-		"""
 		self.bitmap[keyTObit[key_name]+2] = chr(max(ord(self.bitmap[keyTObit[key_name]+2]), red))
 		self.bitmap[keyTObit[key_name]+1] = chr(max(ord(self.bitmap[keyTObit[key_name]+1]), green))
 		self.bitmap[keyTObit[key_name]+0] = chr(max(ord(self.bitmap[keyTObit[key_name]+0]), blue))
@@ -382,22 +387,12 @@ class keyboard_effect:
 				self.bitmap[keyTObit[tar]+1] = chr(0)
 				self.bitmap[keyTObit[tar]+0] = chr(0)
 			tar_effect.next()
-		#self.active_effect[:] = [x for x in self.active_effect if max(x.red, x.green, x.blue) > 40 ]
-		"""
-		for tar_effect in self.active_effect_d1:
-			self.active_effect.append(tar_effect)
-		self.active_effect_d1 = self.active_effect_d2
-		self.active_effect_d2 = self.active_effect_d3
-		self.active_effect_d3 = self.active_effect_d4
-		self.active_effect_d4 = self.active_effect_d5
-		self.active_effect_d5 = self.active_effect_d6
-		self.active_effect_d6 = []
-		"""
+		self.active_effect[:] = [x for x in self.active_effect if max(x.red, x.green, x.blue) > 40 ]
 		for tar_effect in self.active_effect:
 			for tar in tar_effect.vst.keys():
-				self.bitmap[keyTObit[tar]+2] = chr(max(ord(self.bitmap[keyTObit[tar]+2]), int(tar_effect.red*Rbrightiness[tar_effect.vst[tar]])))
-				self.bitmap[keyTObit[tar]+1] = chr(max(ord(self.bitmap[keyTObit[tar]+1]), int(tar_effect.green*Gbrightiness[tar_effect.vst[tar]])))
-				self.bitmap[keyTObit[tar]+0] = chr(max(ord(self.bitmap[keyTObit[tar]+0]), int(tar_effect.blue*Bbrightiness[tar_effect.vst[tar]])))
+				self.bitmap[keyTObit[tar]+2] = chr(max(ord(self.bitmap[keyTObit[tar]+2]), int(tar_effect.red*RRbrightiness[tar_effect.vst[tar]]+tar_effect.green*GRbrightiness[tar_effect.vst[tar]]+tar_effect.blue*BRbrightiness[tar_effect.vst[tar]])))
+				self.bitmap[keyTObit[tar]+1] = chr(max(ord(self.bitmap[keyTObit[tar]+1]), int(tar_effect.red*RGbrightiness[tar_effect.vst[tar]]+tar_effect.green*GGbrightiness[tar_effect.vst[tar]]+tar_effect.blue*BGbrightiness[tar_effect.vst[tar]])))
+				self.bitmap[keyTObit[tar]+0] = chr(max(ord(self.bitmap[keyTObit[tar]+0]), int(tar_effect.red*RBbrightiness[tar_effect.vst[tar]]+tar_effect.green*GBbrightiness[tar_effect.vst[tar]]+tar_effect.blue*BBbrightiness[tar_effect.vst[tar]])))
 		self.draw_by_bitmap()
 
 	def draw_by_bitmap(self):
@@ -407,28 +402,35 @@ class keyboard_effect:
 				logi_led.logi_led_set_lighting_for_key_with_key_name(keyTObit.keys()[keyTObit.values().index(i)],ord(self.bitmap[i+2])*100/255,ord(self.bitmap[i+1])*100/255,ord(self.bitmap[i])*100/255)
 
 def mpause():
-	time.sleep(0.05)
+	time.sleep(0.04)
 
+"""
+import threading
 KE = keyboard_effect()
+"""
 
+def graph_effect(KE, stop_event):
+	while not stop_event.is_set():
+		mpause()
+		KE.next()
+"""
+t_stop = threading.Event()
+threading.Thread( target = graph_effect, args = (KE, t_stop)).start()
 
 while True:
-	KE.next()
-	KE.touching(random.choice(keyTObit.keys()), random.randint(250,255), 0, 0)
-	for i in range(0,15):
+	KE.touching(random.choice(keyTObit.keys()), 255, 0, 0)
+	for i in range(0,25):
 		mpause()
-		KE.next()
-	KE.touching(random.choice(keyTObit.keys()), 0, random.randint(250,255), 0)
-	for i in range(0,15):
+	KE.touching(random.choice(keyTObit.keys()), 0, 255, 0)
+	for i in range(0,25):
 		mpause()
-		KE.next()
-	KE.touching(random.choice(keyTObit.keys()), 0, 0, random.randint(250,255))
-	for i in range(0,15):
+	KE.touching(random.choice(keyTObit.keys()), 0, 0, 255)
+	for i in range(0,25):
 		mpause()
-		KE.next()
 
-
+#t_stop.set()
 
 raw_input( "end" )
 
 logi_led.logi_led_shutdown()
+"""
