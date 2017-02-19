@@ -1,0 +1,16 @@
+// display message ( server -> client )
+	{ action: 'display' , data: [number , user, msg, icon , id] }
+	if different from previous, animation
+
+// type
+	{ action: 'type', usertype: 'abfjfgfgb' }
+	if first char, animation
+	if change, animation
+
+	abcdeg
+
+
+// type send
+	{ action: 'send' }
+
+[1, 2, 3, 4, 5]
