@@ -17,6 +17,8 @@ import random
 import json
 from logipy import logi_arx
 import logging
+import html
+import cgi
 
 
 logging.getLogger("fbchat").setLevel(logging.WARNING)
@@ -29,33 +31,34 @@ class EchoBot(fbchat.Client):
         fbchat.Client.__init__(self,email, password, debug, user_agent)
         self.message_list = []
         self.icon_index = 0
-        self.user_index = {}   #[author_id:index]
+        self.user_index = []   #[author_id:index]
         self.pivot = 0 #pointer to the friend of the arx page
 
     def on_message(self, mid, author_id, author_name, message, metadata):
+        
         global contact,name_list
         self.markAsDelivered(author_id, mid) #mark delivered
         self.markAsRead(author_id) #mark read
-
-        print("%s said: %s"%(author_id, message))
-        #update_json(message)
-        if author_id not in contact.values():  #initialize the new sender
-            num = random.randint(-1,len(name_list)-1) #random name for new sender
-            name = name_list[num]
-            contact[name] = author_id #sender side  ex:['John':'123123123213']
-            name_list.remove(name)
-            self.user_index[author_id] = len(self.message_list)
-            #the index of message_list is the number of the user 
-            self.message_list.append({
-                'name':name,
-                'msg':"",
-                'icon':icon[self.icon_index % len(icon)],
-                'author_id':author_id
-            })
-            self.icon_index += 1
-        index = self.user_index[author_id]
-        self.send_message_to_arx(message)
-        self.message_list[index]['msg'] += message+'\n'  # append the new message from the sender
+        if str(author_id) != '100015293506097':
+            print("%s said: %s"%(author_id, message))
+            #update_json(message)
+            if author_id not in contact.values():  #initialize the new sender
+                num = random.randint(-1,len(name_list)-1) #random name for new sender
+                name = name_list[num]
+                contact[name] = author_id #sender side  ex:['John':'123123123213']
+                name_list.remove(name)
+                self.user_index.append(author_id)
+                #the index of message_list is the number of the user 
+                self.message_list.append({
+                    'name':name,
+                    'msg':"",
+                    'icon':icon[self.icon_index % len(icon)],
+                    'author_id':author_id
+                })
+                self.icon_index += 1
+            index = self.user_index.index(author_id)
+            self.message_list[index]['msg'] += message+'\n'  # append the new message from the sender
+            self.display_message_to_arx()
 
     #------Move the pivot-----    
     def change_pivot(self,direction):
@@ -78,8 +81,8 @@ class EchoBot(fbchat.Client):
         update_json({'action':'send','msg':message})
 
     #------Ask arx to display the FB message
-    def display_message_to_arx(self,number):
-        number %= len(self.message_list)
+    def display_message_to_arx(self):
+        
         pkg = {
             'pivot':self.pivot,
             'action':'display',
@@ -100,7 +103,7 @@ class EchoBot(fbchat.Client):
 flag = 0
 #------Handke the GKEY,m1~m3------------------
 def gkey_callback(gkeyCode , gkeyOrButtonString,context):
-  global  now_mkey , now_gkey , is_key_pressed,state,mouse_counter,type_msg,flag,gkey_onkeyboard,canned_mesage
+  global  now_mkey , now_gkey , is_key_pressed,state,mouse_counter,type_msg,flag,gkey_onkeyboard,canned_mesage,contact
   print '\n[gKey] default_callback called with: gkeyCode = {gkeyCode}, gkeyOrButtonString = {gkeyOrButtonString}, context = {context}'.format(
   gkeyCode = gkeyCode, gkeyOrButtonString = gkeyOrButtonString, context = context)
   print flag
@@ -117,12 +120,20 @@ def gkey_callback(gkeyCode , gkeyOrButtonString,context):
       state = 0
       #--------Send the message user type to the arx and FB friend
       if type_msg != '' and mouse_counter%4==3:
+        print '====================',bot.message_list
         print 'u type the sentence:',type_msg
         #bot.send_message_to_arx()
         print 'message_list:',bot.message_list
         bot.send_message_to_user(bot.pivot,type_msg)
         bot.send_message_to_arx(type_msg)
         type_msg = ''
+        name = bot.message_list[bot.pivot]['name']
+        bot.user_index.remove(contact[name])
+        del contact[name]
+        bot.message_list.remove(bot.message_list[bot.pivot])
+        print '********************',bot.message_list
+        time.sleep(2)
+        bot.display_message_to_arx()
   #-------Press the other GKEY (and detect which m key is pressed in m1 ~ m3)----
   else:
     now_gkey = int(gkeyOrButtonString[1])
@@ -137,7 +148,7 @@ def gkey_callback(gkeyCode , gkeyOrButtonString,context):
         bot.send_message_to_user(bot.pivot,message)
         bot.send_message_to_arx(message)
       elif now_mkey == 2:  #The watching mode
-        #odd for right, even for left
+        #odd for right, even for leftd
         if now_gkey % 2 == 1:
           direction = 1
         else:
@@ -156,41 +167,38 @@ def listen_on_keyboard():
   
 def onKeyboardEvent(event):
   global type_msg
-  type_msg += chr(event.Ascii)
+  if event.KeyID == 8: #backspace
+    type_msg = type_msg[:-1]
+  else:
+    type_msg += chr(event.Ascii)
   bot.type_message_to_arx(type_msg)
   print 'u type',chr(event.Ascii)
   return True
 
+json_pool = []
+
 def update_json(diction):
-  html = index = """
-    <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, target-densityDpi=device-dpi, user-scalable=no" />
-        <link rel="stylesheet" type="text/css" href="style.css">
-    </head>
-    <body style="color:green; font-size:200px;">
-    <div id="json">"""+ json.dumps(diction) + """</div>
-    </body>
-    </html>
-    """
-  css = """
-      body {
-          background-color: white;
-      }
-      img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 118px;
-        height: 118px;
-        margin-top: -59px;
-        margin-left: -59px;
-      }
-      """
-  print "dddddddddddddddddddddddddddddddddddd",diction
-  logi_arx.logi_arx_add_utf8_string_as(index, 'index.html', 'text/html')
-  logi_arx.logi_arx_add_utf8_string_as(css, 'style.css', 'text/css')
-  logi_arx.logi_arx_set_index('index.html')
+    print '====================================='
+    s = json.dumps( diction )
+
+   
+    s = cgi.escape(s, quote=True)
+    l = len( s ) / 10
+    for i in range( 10 ):
+        mid = 'message' + str(i) 
+        if i == 9:
+            targetStr = s[l*i:]
+        else:
+            targetStr = s[l*i:l*(i+1)]
+
+        print mid, '------' ,  targetStr
+       
+
+        logi_arx.logi_arx_set_tag_property_by_id( mid , 'value' , targetStr )
+
+    
+
+ 
 
 """
 0: init
@@ -216,7 +224,7 @@ type_msg = ''
 contact = {}
 
 #---------virtual friend initialization
-name_list = ['Andy','Henry','John','Logi','NCTU']
+name_list = ['Andy','Henry','John','Logi','NCTU','NTHU']
 icon = [
     'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697057-facebook-512.png',
     'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697029-twitter-128.png',
@@ -247,8 +255,13 @@ print 'gkey init ..' , logi_gkey.logi_gkey_init(gkey_callback)
 
 logi_arx.logi_arx_init('com.logitech.gaming.logipy', 'LogiPy')
 time.sleep(1)
+f = open('..\\ARX Layout\\index.html', 'r')
+index = f.read()
+logi_arx.logi_arx_add_utf8_string_as(index, 'index.html', 'text/html')
+logi_arx.logi_arx_set_index( 'index.html' )
 
-#----------FB listener-------------
+
+#----------FB listener-------------du
 bot = EchoBot("stanley17112000.001@gmail.com", "nopassword123")
 bot.listen()
 

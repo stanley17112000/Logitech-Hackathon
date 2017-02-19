@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{df8701a7-975b-44a4-855f-899e95cde329}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>samples\logipy_samples.py</StartupFile>
+    <StartupFile>server.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -41,7 +41,7 @@
     <Compile Include="notification\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="samples\logipy_samples.py" />
+    <Compile Include="server.py" />
     <Compile Include="setup.py">
       <SubType>Code</SubType>
     </Compile>
