@@ -19,12 +19,12 @@ print "init = ",val
 time.sleep(1) # Give the SDK a second to initialize
 
 neighbor = {}
-neighbor[logi_led.ESC] = [logi_led.G_6, logi_led.G_LOGO, logi_led.F1, logi_led.ONE, logi_led.TILDE, logi_led.G_1]
+neighbor[logi_led.ESC] = [logi_led.G_LOGO, logi_led.F1, logi_led.ONE, logi_led.TILDE, logi_led.G_1]
 neighbor[logi_led.F1] = [logi_led.G_6, logi_led.G_7, logi_led.ESC, logi_led.F2, logi_led.ONE, logi_led.TWO]
 neighbor[logi_led.F2] = [logi_led.G_6, logi_led.G_7, logi_led.G_8, logi_led.F1, logi_led.F3, logi_led.TWO, logi_led.THREE]
 neighbor[logi_led.F3] = [logi_led.G_7, logi_led.G_8, logi_led.G_9, logi_led.F2, logi_led.F4, logi_led.THREE, logi_led.FOUR]
 neighbor[logi_led.F4] = [logi_led.G_8, logi_led.G_9, logi_led.F3, logi_led.F5, logi_led.FOUR, logi_led.FIVE]
-neighbor[logi_led.F5] = [logi_led.G_9, logi_led.F4, logi_led.F6, logi_led.FIVE, logi_led.SIX, logi_led.SEVEN]
+neighbor[logi_led.F5] = [logi_led.F4, logi_led.F6, logi_led.FIVE, logi_led.SIX, logi_led.SEVEN]
 neighbor[logi_led.F6] = [logi_led.F5, logi_led.F7, logi_led.SEVEN, logi_led.EIGHT]
 neighbor[logi_led.F7] = [logi_led.F6, logi_led.F8, logi_led.EIGHT, logi_led.NINE]
 neighbor[logi_led.F8] = [logi_led.F7, logi_led.F9, logi_led.NINE, logi_led.ZERO]
@@ -265,52 +265,111 @@ keyTObit[logi_led.G_9] = 32+21*4*6
 keyTObit[logi_led.G_LOGO] = 36+21*4*6
 keyTObit[logi_led.G_BADGE] = 40+21*4*6
 
+boarder = []
+boarder.append(logi_led.G_1)
+boarder.append(logi_led.G_2)
+boarder.append(logi_led.G_3)
+boarder.append(logi_led.G_4)
+boarder.append(logi_led.G_5)
+boarder.append(logi_led.G_6)
+boarder.append(logi_led.G_7)
+boarder.append(logi_led.G_8)
+boarder.append(logi_led.G_9)
+boarder.append(logi_led.G_LOGO)
+boarder.append(logi_led.G_BADGE)
+
+boarder.append(logi_led.ESC)
+boarder.append(logi_led.F5)
+boarder.append(logi_led.F6)
+boarder.append(logi_led.F7)
+boarder.append(logi_led.F8)
+boarder.append(logi_led.F9)
+boarder.append(logi_led.F10)
+boarder.append(logi_led.F11)
+boarder.append(logi_led.F12)
+boarder.append(logi_led.PRINT_SCREEN)
+boarder.append(logi_led.SCROLL_LOCK)
+boarder.append(logi_led.PAUSE_BREAK)
+
+boarder.append(logi_led.NUM_LOCK)
+boarder.append(logi_led.NUM_SLASH)
+boarder.append(logi_led.NUM_ASTERISK)
+boarder.append(logi_led.NUM_MINUS)
+
+boarder.append(logi_led.NUM_PLUS)
+boarder.append(logi_led.NUM_ENTER)
+
+boarder.append(logi_led.LEFT_CONTROL)
+boarder.append(logi_led.LEFT_WINDOWS)
+boarder.append(logi_led.SPACE)
+boarder.append(logi_led.RIGHT_ALT)
+boarder.append(logi_led.RIGHT_WINDOWS)
+boarder.append(logi_led.APPLICATION_SELECT)
+boarder.append(logi_led.RIGHT_CONTROL)
+boarder.append(logi_led.ARROW_LEFT)
+boarder.append(logi_led.ARROW_DOWN)
+boarder.append(logi_led.ARROW_RIGHT)
+boarder.append(logi_led.NUM_ZERO)
+boarder.append(logi_led.NUM_PERIOD)
+
+Rbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.35, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+Gbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.35, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+Bbrightiness = [1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.65, 0.6, 0.5, 0.45, 0.4, 0.3, 0.35, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0]
+
 class touching_effect:
-	def __init__(self, pos, red, green, blue):
-		self.sta = [[pos], []]
+	def __init__(self, pos, red, green, blue, gen = 0):
+		self.sta = [list(pos), []]
 		self.state = 0
-		self.vst = [pos]
+		self.vst = {x:0 for x in pos}
 		self.red = red
 		self.green = green
 		self.blue = blue
+		self.gen = gen
+		#if pos in boarder:
+		#	self.gen = 1
 	
 	def next(self):
 		nstate = 0
 		if(self.state == 0):
 			nstate = 1
+		for tar in self.vst.keys():
+			self.vst[tar] = min(self.vst[tar] + 1, 20)
 		for tar in self.sta[self.state]:
 			for nei in neighbor[tar]:
-				if nei not in self.vst:
+				if nei not in self.vst.keys():
 					self.sta[nstate].append(nei)
-					self.vst.append(nei)
+					self.vst[nei] = 0
 		self.sta[self.state] = []
 		self.state = nstate
-		self.red = int(self.red * 0.9)
-		self.green = int(self.green * 0.9)
-		self.blue = int(self.blue * 0.9)
+		self.red = int(self.red * 0.95)
+		self.green = int(self.green * 0.95)
+		self.blue = int(self.blue * 0.95)
 		return self.sta[self.state]
-
 
 class keyboard_effect:
 	
 	def __init__(self):
 		self.active_effect = []
+		"""
 		self.active_effect_d1 = []
 		self.active_effect_d2 = []
 		self.active_effect_d3 = []
 		self.active_effect_d4 = []
 		self.active_effect_d5 = []
 		self.active_effect_d6 = []
+		"""
 		self.bitmap = [chr(0),chr(0),chr(0),chr(255)]*21*7
 
-	def touching(self, key_name, red = 255, green = 255, blue = 255):
-		self.active_effect.append(touching_effect(key_name, int(red*1.0), int(green*1.0), int(blue*1.0)))
-		self.active_effect_d1.append(touching_effect(key_name, int(red*0.9), int(green*0.8), int(blue*0.9)))
-		self.active_effect_d2.append(touching_effect(key_name, int(red*0.5), int(green*0.5), int(blue*0.5)))
-		self.active_effect_d3.append(touching_effect(key_name, int(red*0.1), int(green*0.1), int(blue*0.1)))
-		self.active_effect_d4.append(touching_effect(key_name, int(red*0.3), int(green*0.2), int(blue*0.3)))
-		self.active_effect_d5.append(touching_effect(key_name, int(red*0.6), int(green*0.4), int(blue*0.6)))
-		self.active_effect_d6.append(touching_effect(key_name, int(red*0.2), int(green*0.1), int(blue*0.2)))
+	def touching(self, key_name, red = 255, green = 255, blue = 255, gen = 0):
+		self.active_effect.append(touching_effect([key_name], int(red*1.0), int(green*1.0), int(blue*1.0), gen))
+		"""
+		self.active_effect_d1.append(touching_effect([key_name], int(red*0.9), int(green*0.8), int(blue*0.9), gen))
+		self.active_effect_d2.append(touching_effect([key_name], int(red*0.5), int(green*0.5), int(blue*0.5), gen))
+		self.active_effect_d3.append(touching_effect([key_name], int(red*0.1), int(green*0.1), int(blue*0.1), gen))
+		self.active_effect_d4.append(touching_effect([key_name], int(red*0.3), int(green*0.2), int(blue*0.3), gen))
+		self.active_effect_d5.append(touching_effect([key_name], int(red*0.6), int(green*0.4), int(blue*0.6), gen))
+		self.active_effect_d6.append(touching_effect([key_name], int(red*0.2), int(green*0.1), int(blue*0.2), gen))
+		"""
 		self.bitmap[keyTObit[key_name]+2] = chr(max(ord(self.bitmap[keyTObit[key_name]+2]), red))
 		self.bitmap[keyTObit[key_name]+1] = chr(max(ord(self.bitmap[keyTObit[key_name]+1]), green))
 		self.bitmap[keyTObit[key_name]+0] = chr(max(ord(self.bitmap[keyTObit[key_name]+0]), blue))
@@ -318,28 +377,27 @@ class keyboard_effect:
 
 	def next(self):
 		for tar_effect in self.active_effect:
-			for tar in tar_effect.sta[tar_effect.state]:
+			for tar in tar_effect.vst.keys():
 				self.bitmap[keyTObit[tar]+2] = chr(0)
 				self.bitmap[keyTObit[tar]+1] = chr(0)
 				self.bitmap[keyTObit[tar]+0] = chr(0)
 			tar_effect.next()
-		self.active_effect[:] = [x for x in self.active_effect if max(x.red, x.green, x.blue) > 40 ]
+		#self.active_effect[:] = [x for x in self.active_effect if max(x.red, x.green, x.blue) > 40 ]
+		"""
 		for tar_effect in self.active_effect_d1:
 			self.active_effect.append(tar_effect)
-			self.bitmap[keyTObit[tar_effect.sta[0][0]]+2] = chr(max(ord(self.bitmap[keyTObit[tar_effect.sta[0][0]]+2]), tar_effect.red))
-			self.bitmap[keyTObit[tar_effect.sta[0][0]]+1] = chr(max(ord(self.bitmap[keyTObit[tar_effect.sta[0][0]]+1]), tar_effect.green))
-			self.bitmap[keyTObit[tar_effect.sta[0][0]]+0] = chr(max(ord(self.bitmap[keyTObit[tar_effect.sta[0][0]]+0]), tar_effect.blue))
 		self.active_effect_d1 = self.active_effect_d2
 		self.active_effect_d2 = self.active_effect_d3
 		self.active_effect_d3 = self.active_effect_d4
 		self.active_effect_d4 = self.active_effect_d5
 		self.active_effect_d5 = self.active_effect_d6
 		self.active_effect_d6 = []
+		"""
 		for tar_effect in self.active_effect:
-			for tar in tar_effect.sta[tar_effect.state]:
-				self.bitmap[keyTObit[tar]+2] = chr(max(ord(self.bitmap[keyTObit[tar]+2]), tar_effect.red))
-				self.bitmap[keyTObit[tar]+1] = chr(max(ord(self.bitmap[keyTObit[tar]+1]), tar_effect.green))
-				self.bitmap[keyTObit[tar]+0] = chr(max(ord(self.bitmap[keyTObit[tar]+0]), tar_effect.blue))
+			for tar in tar_effect.vst.keys():
+				self.bitmap[keyTObit[tar]+2] = chr(max(ord(self.bitmap[keyTObit[tar]+2]), int(tar_effect.red*Rbrightiness[tar_effect.vst[tar]])))
+				self.bitmap[keyTObit[tar]+1] = chr(max(ord(self.bitmap[keyTObit[tar]+1]), int(tar_effect.green*Gbrightiness[tar_effect.vst[tar]])))
+				self.bitmap[keyTObit[tar]+0] = chr(max(ord(self.bitmap[keyTObit[tar]+0]), int(tar_effect.blue*Bbrightiness[tar_effect.vst[tar]])))
 		self.draw_by_bitmap()
 
 	def draw_by_bitmap(self):
@@ -349,7 +407,7 @@ class keyboard_effect:
 				logi_led.logi_led_set_lighting_for_key_with_key_name(keyTObit.keys()[keyTObit.values().index(i)],ord(self.bitmap[i+2])*100/255,ord(self.bitmap[i+1])*100/255,ord(self.bitmap[i])*100/255)
 
 def mpause():
-	time.sleep(0.1)
+	time.sleep(0.05)
 
 KE = keyboard_effect()
 
