@@ -1,0 +1,258 @@
+# coding = UTF-8
+# -*- coding: utf-8 -*-
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from notification import notification, notificationEX
+from logipy import logi_led, logi_gkey
+import time
+import ctypes
+import pythoncom
+import pyHook
+import threading
+import fbchat
+import random
+import json
+from logipy import logi_arx
+import logging
+
+
+logging.getLogger("fbchat").setLevel(logging.WARNING)
+
+#G2/M3
+
+class EchoBot(fbchat.Client):
+
+    def __init__(self,email, password, debug=True, user_agent=None):
+        fbchat.Client.__init__(self,email, password, debug, user_agent)
+        self.message_list = []
+        self.icon_index = 0
+        self.user_index = {}   #[author_id:index]
+        self.pivot = 0 #pointer to the friend of the arx page
+
+    def on_message(self, mid, author_id, author_name, message, metadata):
+        global contact,name_list
+        self.markAsDelivered(author_id, mid) #mark delivered
+        self.markAsRead(author_id) #mark read
+
+        print("%s said: %s"%(author_id, message))
+        update_json(message)
+        if author_id not in contact.values():  #initialize the new sender
+            num = random.randint(-1,len(name_list)-1) #random name for new sender
+            name = name_list[num]
+            contact[name] = author_id #sender side  ex:['John':'123123123213']
+            name_list.remove(name)
+            self.user_index[author_id] = len(self.message_list)
+            #the index of message_list is the number of the user 
+            self.message_list.append({
+                'name':name,
+                'msg':"",
+                'icon':icon[self.icon_index % len(icon)],
+                'author_id':author_id
+            })
+            self.icon_index += 1
+        index = self.user_index[author_id]
+        self.message_list[index]['msg'] += message+'\n'  # append the new message from the sender
+
+    #------Move the pivot-----    
+    def change_pivot(self,direction):
+        #direction : 1 or -1
+        self.pivot += direction
+        self.pivot %= len(self.message_list)
+        if direction is 1:
+          update_json({'action':'right'})
+        else:
+          update_json({'action':'left'})
+
+    #------Send the message user type to FB friend----
+    def send_message_to_user(self,index,message):
+        author_id = self.message_list[index]['author_id']
+        #message is from GKEY
+        self.send(author_id,message)
+
+    #------Ask arx to    
+    def send_message_to_arx(self,message):
+        update_json({'action':'send','msg':message})
+
+    #------Ask arx to display the FB message
+    def display_message_to_arx(self,number):
+        number %= len(self.message_list)
+        pkg = {
+            'pivot':self.pivot,
+            'action':'display',
+            'data': self.message_list
+        }
+        update_json(pkg)
+
+    #------Update the message user type to arx dynamically----
+    def type_message_to_arx(self,messgae_user_type):
+        string_from_GKEY = messgae_user_type  #a->ab->abc->abcd->........
+        pkg = {
+            'action':'type',
+            'usertype':string_from_GKEY
+        }
+        update_json(pkg)
+        
+
+flag = 0
+#------Handke the GKEY,m1~m3------------------
+def gkey_callback(gkeyCode , gkeyOrButtonString,context):
+  global  now_mkey , now_gkey , is_key_pressed,state,mouse_counter,type_msg,flag,gkey_onkeyboard,canned_mesage
+  print '\n[gKey] default_callback called with: gkeyCode = {gkeyCode}, gkeyOrButtonString = {gkeyOrButtonString}, context = {context}'.format(
+  gkeyCode = gkeyCode, gkeyOrButtonString = gkeyOrButtonString, context = context)
+  print flag
+  flag+=1
+
+  #-------Press the GKEY on the mouse------
+  if gkeyOrButtonString == 'Mouse Btn 6':
+    mouse_counter += 1
+    #------Enter typing mode-------
+    if mouse_counter % 4 == 2:
+      state = 1
+    #------No typing mode--------
+    else:
+      state = 0
+      #--------Send the message user type to the arx and FB friend
+      if type_msg != '' and mouse_counter%4==3:
+        print 'u type the sentence:',type_msg
+        #bot.send_message_to_arx()
+        print 'message_list:',bot.message_list
+        bot.send_message_to_user(bot.pivot,type_msg)
+        bot.send_message_to_arx(type_msg)
+        type_msg = ''
+  #-------Press the other GKEY (and detect which m key is pressed in m1 ~ m3)----
+  else:
+    now_gkey = int(gkeyOrButtonString[1])
+    now_mkey = int(gkeyOrButtonString[4])
+    gkey_onkeyboard[now_gkey]+=1
+    gkey_onkeyboard[now_gkey]%=4
+    #press certain gkey 
+    if gkey_onkeyboard[now_gkey] % 4 == 2:
+      
+      if now_mkey == 3:    #The canned message mode
+        message = canned_mesage[now_gkey]
+        bot.send_message_to_user(bot.pivot,message)
+        bot.send_message_to_arx(message)
+      elif now_mkey == 2:  #The watching mode
+        #odd for right, even for left
+        if now_gkey % 2 == 1:
+          direction = 1
+        else:
+          direction = -1
+        bot.change_pivot(direction)
+
+def listen_on_keyboard():
+  global state
+  hm = pyHook.HookManager()
+  hm.KeyDown = onKeyboardEvent
+  hm.HookKeyboard()
+  while 1:
+    if state == 1:
+      pythoncom.PumpWaitingMessages()
+
+  
+def onKeyboardEvent(event):
+  global type_msg
+  type_msg += chr(event.Ascii)
+  bot.type_message_to_arx(type_msg)
+  print 'u type',chr(event.Ascii)
+  return True
+
+def update_json(diction):
+  html = index = """
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, target-densityDpi=device-dpi, user-scalable=no" />
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body style="color:green; font-size:200px;">
+    <div id="json">"""+ json.dumps(diction) + """</div>
+    </body>
+    </html>
+    """
+  css = """
+      body {
+          background-color: white;
+      }
+      img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 118px;
+        height: 118px;
+        margin-top: -59px;
+        margin-left: -59px;
+      }
+      """
+  logi_arx.logi_arx_add_utf8_string_as(index, 'index.html', 'text/html')
+  logi_arx.logi_arx_add_utf8_string_as(css, 'style.css', 'text/css')
+  logi_arx.logi_arx_set_index('index.html')
+
+"""
+0: init
+1: mouse (typing)
+2: m1 (nothing)
+3: m2 (canned message)
+ """
+state = 0 
+
+#------GKEY and m1~m3-------
+now_mkey = 0
+now_gkey = 0
+is_key_pressed = False
+
+#---------record the click of the GKEY on the mouse and the keyboard------
+mouse_counter = 0
+gkey_onkeyboard = [0]*10
+
+#--------message user have typed---------
+type_msg = ''
+
+#---------record name and author_id   ex:{'John':'213212321'}
+contact = {}
+
+#---------virtual friend initialization
+name_list = ['Andy','Henry','John','Logi','NCTU']
+icon = [
+    'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697057-facebook-512.png',
+    'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697029-twitter-128.png',
+    'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697037-youtube-128.png',
+    'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697034-windows-visual-studio-128.png',
+    'https://cdn1.iconfinder.com/data/icons/iconza-circle-social/64/697067-instagram-128.png'
+]
+
+#----canned message-----
+canned_mesage=[
+  '',
+  'I\'m playing game and will reply you later~',
+  'I am doing homework, don\'t bother me!',
+  'Fu*k you man',
+  'That\'s a good idea.',
+  'I\'m watching movies, sry.',
+  'Yes!',
+  'No',
+  'That sounds bad!'
+]
+
+
+#------listen on the keyboard-------
+threading.Thread(target = listen_on_keyboard, args = ()).start()
+
+#------initialize the GKEY SDK---------
+print 'gkey init ..' , logi_gkey.logi_gkey_init(gkey_callback)
+
+logi_arx.logi_arx_init('com.logitech.gaming.logipy', 'LogiPy')
+time.sleep(1)
+update_json(['sfada', {'bar': ('baz', None, 1.0, 2)}])
+#raw_input('Press enter to shutdown SDK...')
+
+
+#----------FB listener-------------
+bot = EchoBot("stanley17112000.001@gmail.com", "nopassword123")
+bot.listen()
+
+
+time.sleep(100)
+
