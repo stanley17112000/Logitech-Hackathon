@@ -86,11 +86,7 @@ index = """
         </div>
     </div>
     </body>
-    <script>
- $(function(){
-      $("#mainContent").load("good.html"); 
-    });
-    </script>
+
     </html>
     """
 def custom_callback(event_type, event_value, event_arg, context):

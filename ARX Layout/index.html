@@ -1,0 +1,205 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Vollkorn">
+            <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+          .fullscreen{
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 10%;
+            height: 100%;
+          }
+          .boxPadding{
+            padding: 20px;
+            font-family: 'Vollkorn', serif;
+            font-size: 20px;
+          }
+          .outline_box{
+            border: 3px dashed #ccc;
+            margin-left: 40px;
+            height: 25%;
+          }
+          .fromMessage{
+             display: inline-block;
+             vertical-align: middle;
+          }
+          .input{
+              
+              margin-left: 50px;
+          }
+          .fromBox{
+             height: 100%;
+             display: inline-block;
+             vertical-align: middle;
+          }
+
+          .blink_me {
+            animation: blinker 1s linear infinite;
+          }
+
+          @keyframes blinker {  
+            50% { opacity: 0; }
+          }
+
+          .halfHeight{
+            height: 50%;
+            
+            vertical-align: middle;
+          }
+
+          .centerImg{
+            width : 100%;
+            text-align: center
+
+          }
+
+        </style>
+        <script> 
+            if (!String.format) {
+              String.format = function(format) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                return format.replace(/{(\d+)}/g, function(match, number) { 
+                  return typeof args[number] != 'undefined'
+                    ? args[number] 
+                    : match
+                  ;
+                });
+              };
+            }
+            function appendSelfMessage( msg="" ){
+                $('.active > .row > .col-xs-9 > div > .input').html( msg )
+            }
+            function nextPage(  ){
+                $('#rightControl').click()
+            }
+            function prevPage(  ){
+                $('#leftControl').click()
+            }
+            function updateMessage( msgs ){
+                if ( typeof( msgs ) == 'undefined' || msgs.length == 0 ){
+                    $('#mainContent').html( '<img class="centerImg" src="http://i.imgur.com/bIVtAM1.png">' )
+                }
+                else{
+                  var appendString = gen_html_carouse_header( msgs.length )
+  
+                  for ( var i = 0 ; i < msgs.length ; i++ ){
+                      msg = msgs[i]
+                      appendString += gen_html_carouse_body( msg , i == 0 )
+
+                  }console.log( appendString )
+                  appendString += gen_html_carouse_tail()
+                  
+                  $('#mainContent').html(  appendString )
+                  $('#myCarouse1').carousel()
+
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+    <div id="mainContent" class="container" style="margin-top:30px;">
+          <img class="centerImg" src="http://i.imgur.com/bIVtAM1.png">
+  
+    </div>
+    </body>
+    <script>
+
+      function gen_html_carouse_header( count ){
+          str = `
+            <div id="myCarousel" class="carousel slide boxPadding" data-ride="carousel" data-interval="false">
+              <!-- Indicators -->
+              <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+          `
+          for ( var i = 1 ; i < count;  i++ )
+            str += String.format( '<li data-target="#myCarousel" data-slide-to="{0}"></li> ' , i )
+          str += '</ol>'
+          str += '<div class="carousel-inner" role="listbox">'
+          return str
+      }
+      function gen_html_carouse_body( msg , isActive ){
+
+          fromMessage = 'Hi, there. My name is Stanley. Im from Taiwan'
+          toMessage = 'Hello, body'
+          fromIconUrl = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQjMQSVoXBDjYUpZm9a-HLx0IiKIr6wuujnCcNU8Ou006uihh3n9g'
+          toIconUrl = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQjMQSVoXBDjYUpZm9a-HLx0IiKIr6wuujnCcNU8Ou006uihh3n9g'
+
+          str = String.format( '<div class="item {0}">' , isActive ? 'active' : '' )
+
+          str += `
+            <div class="row halfHeight">
+              <div class="col-xs-3" >
+          `
+
+          str += String.format( '<img class="img-responsive img-circle" src="{0}" >', fromIconUrl )
+                  
+
+          str += `
+              </div>
+              <div class="col-xs-9 fromBox">
+                  <blockquote class="fromMessage">
+                    <p>
+          `
+
+          str += fromMessage
+
+          str += `
+
+                    </p>
+                  </blockquote>
+              </div>
+
+            </div>
+              <div class="row">
+ 
+                <div class="col-xs-9 ">
+                    <div class="outline_box">
+                      <span class="input paddingLeft " id="input">
+              
+                      </span>
+                      <span class="blink_me">I</span>
+                    </div>
+                </div>
+                <div class="col-xs-3" >
+                    <blockquote>
+          `
+          str += String.format( '<img class="img-responsive img-circle" src="{0}" >', toIconUrl )
+          
+          str += `
+                    </blockquote>
+                </div>
+              </div>
+          </div>
+          `
+          console.log( str )
+          return str
+      }
+      function gen_html_carouse_tail(  ){
+          str = '</div>'
+          str += `
+            <!-- Left and right controls -->
+            <a id = "rightControl" class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a id = "leftControl" class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>`
+          return str
+      }
+
+  
+      </script>
+</html>
