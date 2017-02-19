@@ -38,7 +38,7 @@ class EchoBot(fbchat.Client):
         self.markAsRead(author_id) #mark read
 
         print("%s said: %s"%(author_id, message))
-        update_json(message)
+        #update_json(message)
         if author_id not in contact.values():  #initialize the new sender
             num = random.randint(-1,len(name_list)-1) #random name for new sender
             name = name_list[num]
@@ -54,6 +54,7 @@ class EchoBot(fbchat.Client):
             })
             self.icon_index += 1
         index = self.user_index[author_id]
+        self.send_message_to_arx(message)
         self.message_list[index]['msg'] += message+'\n'  # append the new message from the sender
 
     #------Move the pivot-----    
@@ -130,7 +131,7 @@ def gkey_callback(gkeyCode , gkeyOrButtonString,context):
     gkey_onkeyboard[now_gkey]%=4
     #press certain gkey 
     if gkey_onkeyboard[now_gkey] % 4 == 2:
-      
+      gkey_onkeyboard[now_gkey] = 0
       if now_mkey == 3:    #The canned message mode
         message = canned_mesage[now_gkey]
         bot.send_message_to_user(bot.pivot,message)
@@ -186,6 +187,7 @@ def update_json(diction):
         margin-left: -59px;
       }
       """
+  print "dddddddddddddddddddddddddddddddddddd",diction
   logi_arx.logi_arx_add_utf8_string_as(index, 'index.html', 'text/html')
   logi_arx.logi_arx_add_utf8_string_as(css, 'style.css', 'text/css')
   logi_arx.logi_arx_set_index('index.html')
@@ -245,9 +247,6 @@ print 'gkey init ..' , logi_gkey.logi_gkey_init(gkey_callback)
 
 logi_arx.logi_arx_init('com.logitech.gaming.logipy', 'LogiPy')
 time.sleep(1)
-update_json(['sfada', {'bar': ('baz', None, 1.0, 2)}])
-#raw_input('Press enter to shutdown SDK...')
-
 
 #----------FB listener-------------
 bot = EchoBot("stanley17112000.001@gmail.com", "nopassword123")
