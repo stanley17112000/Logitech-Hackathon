@@ -85,26 +85,30 @@ class light:
                 logi_led.P,
                 logi_led.SEMICOLON, ]
 
-	def line_led(self):
+	def line_led(self, duration, intval):
 		logi_led.logi_led_set_lighting(0, 0, 0)
 		for i in self.line:
-			logi_led.logi_led_flash_single_key(i, 0, 100, 0, 5000, 50)
+			logi_led.logi_led_flash_single_key(i, 0, 100, 0, duration, intval)
+                time.sleep(duration / 1000)
+                logi_led.logi_led_stop_effects()
 
-	def facebook_led(self):
+	def facebook_led(self, duration, intval):
 		logi_led.logi_led_set_lighting(0, 0, 0)
 		for i in self.facebook:
-			logi_led.logi_led_flash_single_key(i, 0, 0, 100, 5000, 50)
+			logi_led.logi_led_flash_single_key(i, 0, 0, 100, duration, intval)
+                time.sleep(duration / 1000)
+                logi_led.logi_led_stop_effects()
 
 if __name__ == '__main__':
 	Light = light()
 
 	print ('Setting all device lighting to Line...')
 	time.sleep(1) # Give the SDK a second to initialize
-	Light.line_led()
+	Light.line_led(10, 10)
 	time.sleep(5)
 
 	print ('Setting all device lighting to FB...')
 	time.sleep(1) # Give the SDK a second to initialize
-	Light.facebook_led()
+	Light.facebook_led(10, 10)
 	time.sleep(5)
 

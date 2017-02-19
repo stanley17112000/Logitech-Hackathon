@@ -9,15 +9,20 @@ from notification import notification, notificationEX
 # Set all device lighting to red
 from logipy import logi_led
 from logipy import logi_gkey
+from lights import light
 import time
 import ctypes
+facebook_line_led = light()
 
 print logi_gkey.logi_gkey_init()
 print logi_led.logi_led_init()
-notification.balloon_tip( "hey" , "gay" )
-time.sleep(1) # Give the SDK a second to initialize
+# notification.balloon_tip( "hey" , "gay" )
+# time.sleep(1) # Give the SDK a second to initialize
+facebook_line_led.line_led(10000, 100)
+facebook_line_led.facebook_led(10000, 100)
 raw_input('Press enter to shutdown SDK...')
 logi_led.led_dll.LogiLedShutdown()
+
 
 # Arx snippets
 ##############
