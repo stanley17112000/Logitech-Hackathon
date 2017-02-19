@@ -1,5 +1,5 @@
 // display message ( server -> client )
-	{ action: 'display' , data: [number , user, msg, icon , id] }
+	{ action: 'display' , data: [number , user, msg, icon] }
 	if different from previous, animation
 
 // type
