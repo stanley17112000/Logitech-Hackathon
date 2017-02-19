@@ -1,16 +1,20 @@
-// display message ( server -> client )
-	{ action: 'display' , data: [number , user, msg, icon] }
-	if different from previous, animation
+//action_get
 
-// type
-	{ action: 'type', usertype: 'abfjfgfgb' }
-	if first char, animation
-	if change, animation
+{ action: 'display' , data: [number , user, msg, icon] }
+display message ( server -> client )
+if different from previous, animation
+	
+{action:'type', usertype: 'abfjfgfgb'}
+if first char, animation
+if change, animation
+	
+{action:'send'}
+sned, animation
 
-	abcdeg
+{action:'right'}
+next message, animation
 
-
-// type send
-	{ action: 'send' }
+{action:'left'}
+previous message, animation
 
 [1, 2, 3, 4, 5]
