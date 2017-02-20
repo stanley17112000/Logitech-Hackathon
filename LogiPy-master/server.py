@@ -19,12 +19,20 @@ from logipy import logi_arx
 import logging
 import html
 import cgi
-
-
+from lights import light
+import touching_effect
 logging.getLogger("fbchat").setLevel(logging.WARNING)
 
-#G2/M3
+KE = touching_effect.keyboard_effect()
+te_stop = threading.Event()
+threading.Thread( target = touching_effect.graph_effect, args = (KE, te_stop)).start()
 
+def switch_led():
+    fb_line.facebook_led(100, 0.1)
+    te_stop.clear()
+
+#G2/M3
+fb_line = light()
 class EchoBot(fbchat.Client):
 
     def __init__(self,email, password, debug=True, user_agent=None):
@@ -40,6 +48,9 @@ class EchoBot(fbchat.Client):
         self.markAsDelivered(author_id, mid) #mark delivered
         self.markAsRead(author_id) #mark read
         if str(author_id) != '100015293506097':
+            te_stop.set()
+            threading.Thread( target = switch_led, args = () ).start()
+            #fb_line.facebook_led(100, 0.1)
             print("%s said: %s"%(author_id, message))
             #update_json(message)
             if author_id not in contact.values():  #initialize the new sender
@@ -72,6 +83,8 @@ class EchoBot(fbchat.Client):
 
     #------Send the message user type to FB friend----
     def send_message_to_user(self,index,message):
+        if len( self.message_list ) < index:
+            return
         author_id = self.message_list[index]['author_id']
         #message is from GKEY
         self.send(author_id,message)
@@ -164,13 +177,70 @@ def listen_on_keyboard():
     if state == 1:
       pythoncom.PumpWaitingMessages()
 
-  
+def mpause():
+	time.sleep(0.04)
+
 def onKeyboardEvent(event):
   global type_msg
+  print "EEEEEEE"
   if event.KeyID == 8: #backspace
     type_msg = type_msg[:-1]
   else:
     type_msg += chr(event.Ascii)
+  if type_msg == 'q':
+      KE.touching(logi_led.Q, 255, 0, 0)
+  elif type_msg == 'w':
+      KE.touching(logi_led.W, 255, 0, 0)
+  elif type_msg == 'e':
+      KE.touching(logi_led.E, 255, 0, 0)
+  elif type_msg == 'r':
+      KE.touching(logi_led.R, 255, 0, 0)
+  elif type_msg == 't':
+      KE.touching(logi_led.T, 255, 0, 0)
+  elif type_msg == 'y':
+      KE.touching(logi_led.Y, 255, 0, 0)
+  elif type_msg == 'u':
+      KE.touching(logi_led.U, 255, 0, 0)
+  elif type_msg == 'i':
+      KE.touching(logi_led.I, 255, 0, 0)
+  elif type_msg == 'o':
+      KE.touching(logi_led.O, 255, 0, 0)
+  elif type_msg == 'p':
+      KE.touching(logi_led.P, 255, 0, 0)
+  elif type_msg == 'a':
+      KE.touching(logi_led.A, 255, 0, 0)
+  elif type_msg == 's':
+      KE.touching(logi_led.S, 255, 0, 0)
+  elif type_msg == 'd':
+      KE.touching(logi_led.D, 255, 0, 0)
+  elif type_msg == 'f':
+      KE.touching(logi_led.F, 255, 0, 0)
+  elif type_msg == 'g':
+      KE.touching(logi_led.G, 255, 0, 0)
+  elif type_msg == 'h':
+      KE.touching(logi_led.H, 255, 0, 0)
+  elif type_msg == 'j':
+      KE.touching(logi_led.J, 255, 0, 0)
+  elif type_msg == 'k':
+      KE.touching(logi_led.K, 255, 0, 0)
+  elif type_msg == 'l':
+      KE.touching(logi_led.L, 255, 0, 0)
+  elif type_msg == 'z':
+      KE.touching(logi_led.Z, 255, 0, 0)
+  elif type_msg == 'x':
+      KE.touching(logi_led.X, 255, 0, 0)
+  elif type_msg == 'c':
+      KE.touching(logi_led.C, 255, 0, 0)
+  elif type_msg == 'v':
+      KE.touching(logi_led.V, 255, 0, 0)
+  elif type_msg == 'b':
+      KE.touching(logi_led.B, 255, 0, 0)
+  elif type_msg == 'n':
+      KE.touching(logi_led.N, 255, 0, 0)
+  elif type_msg == 'm':
+      KE.touching(logi_led.M, 255, 0, 0)
+      
+
   bot.type_message_to_arx(type_msg)
   print 'u type',chr(event.Ascii)
   return True
