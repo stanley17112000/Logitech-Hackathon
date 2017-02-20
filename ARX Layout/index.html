@@ -145,7 +145,7 @@
             function prevPage(  ){
                 $('#leftControl').click()
             }
-            function updateMessage( msgs ){
+            function updateMessage( msgs , startIndex ){
 
 
                 if ( typeof( msgs ) == 'undefined' || msgs.length == 0 ){
@@ -173,7 +173,7 @@
                   else
                   {
                     $('#mainContent').html(  appendString )
-                    $('#myCarouse1').carousel()
+                    $('#myCarouse1').carousel( int( startIndex ) )
                   }
                 }
                 pre_msg_len = msgs.length
@@ -215,6 +215,18 @@
           str += '<div class="carousel-inner" role="listbox">'
           return str
       }
+
+      /*
+		{
+			'type' : 'display',
+			'data' : [ {
+				'msg':'Do you have time at 10.pm? Let's meet at the part.',
+				'icon' : 
+				'Zy'
+
+			} ]
+		}
+      */
       function gen_html_carouse_body( msg , isActive ){
 
           fromMessage = msg['msg']
@@ -224,6 +236,12 @@
 
           socialIconUrlLine = 'https://cdn0.iconfinder.com/data/icons/circle-flat/512/line-128.png'
           socialIconUrlFB = 'http://i.imgur.com/3MLJDaF.png'
+
+
+          if ( typeof(msg['socialType']) != 'undefined' && msg['socialType'] == 'line' )
+          	socialIconUrl = socialIconUrlLine
+          else
+          	socialIconUrl = socialIconUrlFB
 
           str = String.format( '<div class="item {0}">' , isActive ? 'active' : '' )
 
@@ -316,7 +334,7 @@
                   res = JSON.parse( str )
                   
                   if ( res['action'] == 'display' ){
-                      updateMessage( res['data'] )
+                      updateMessage( res['data'] , res['pivot'])
 
                   }
                   else if ( res['action'] == 'right' )
