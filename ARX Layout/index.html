@@ -167,7 +167,7 @@
                     $('#mainContent').append(  appendString )
                     $('html, body').animate({scrollTop: $('#mainContent')[0].scrollHeight}, '5000', 'linear', function() {
                                           $('#mainContent').html(  appendString )
-                                          $('#myCarouse1').carousel()
+                                          $('#myCarouse1').carousel( int( startIndex ) )
                     })
                   }
                   else
